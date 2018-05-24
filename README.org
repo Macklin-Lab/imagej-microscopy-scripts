@@ -1,0 +1,122 @@
+#+TITLE: Macklin lab macros and scripts for Fiji/ImageJ
+#+OPTIONS: toc:nil author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
+#+PROPERTY: header-args :eval never-export
+#+LATEX_HEADER: \usepackage[margin=1.0in]{geometry}
+#+LATEX_HEADER: \hypersetup{colorlinks=true,citecolor=black,linkcolor=black,urlcolor=blue,linkbordercolor=blue,pdfborderstyle={/S/U/W 1}}
+#+LATEX_HEADER: \usepackage[round]{natbib}
+
+** Welcome to the Macklin lab macros, scripts, and other microscopy processing fun!
+
+This repository contains a series of short ImageJ/Fiji scripts macros that perform tedious image manipulation tasks common in our lab. This central README will contain documentation for using all of the scripts. If you find problems or would like to make improvements, please fork the repository and submit a pull request. Also, you can email me (Nick) at:
+
+nicholas.m.george@ucdenver.edu
+
+** General use
+
+Please ensure that you have the latest [[https://fiji.sc/][Fiji]] downloaded and installed on your computer. Fiji (batteries included ImageJ) will be the only requirement for this set of scripts. 
+
+These are primarily Jython (Python on the Java interpreter) scripts that can be run via Fiji. 
+To use the scripts, you can do any one of the following: 
+1. clone/fork this repository
+2. Download the repository as a zip
+3. Click "view raw" then copy and save the file as with a =.py= extension
+
+then in Fiji click =File>Open>select-script-here.py= . The script should open in Fiji's script editor, which is shown below:
+[[file:img/blind-files.png]]
+
+You will notice that the scripts should be well commented (to an annoying degree) with notes on how to use them in the notes at the top. If anything needs to be changed by the user, it will be indicated clearly at the top of the script in the comments. For example, in =blink-files.py= you can clearly see the following code between line numbers 20-28:
+
+#+BEGIN_SRC python :results output
+import os
+import uuid
+import shutil
+import sys
+from ij.io import DirectoryChooser
+
+### CHANGE THIS VARIABLE FOR DIFFERENT FILE TYPES!
+fileending = ".tif"
+###
+
+#+END_SRC
+
+So if the file you are blinding doesn't end in =.tif= then you will need to change this variable accordingly. -- this is one place I will add more graphical interaction in the future. 
+
+Now you simply click "Run" button indicated in the example image and the script should give you a "Choose directory" dialogue (after a few seconds) and run. In future versions I will make them more interactive, but they are pretty simple so I don't think a rich user experience is necessary...
+
+* blind-files.py
+
+Have you ever gone through a big directory of files for analysis, created random names for them, copied the old and new name to a key, then renamed the files? I have. Then I figured out how to program so I wouldn't ever have to do that again. 
+
+To use this script, just download it, save it somewhere as =.py= and open it with the script editor in Fiji. When you click =Run=, the script will make a new directory in your chosen directory called =blinded= and will copy your images with new random names into it. In the original folder you will find a =KEY.csv=, which contains a column with the old names and a column with the new names. Inside the new =blinded= directory you will find your photos and a =blinded-key.csv= file with the blinded names on it as a list. The blinded-key is just so you can then write notes or whatever next to the blinded names, then you can easily merge it with =KEY.csv= when you want to finish analysis. Since this script copies the images, I haven't had the need to un-blind the images, but if you want I can make one of those as well. 
+
+** Inputs
+- a directory of files with the appropriate file endings (=.tif= is the default, but this can be changed by changing the variable on line 27)
+** outputs
+- =blinded= directory with blinded images
+- =blinded-key.csv= with the blinded image names
+- =KEY.csv= Key of original names and corresponding blinded names.
+
+* tif-convert.py
+*Active development!* 
+
+This script is meant to use Fiji and bioformats to convert images from many different proprietary vendor types to the easy to work with =tif= format. This scipt is similar to =blind-files.py= in that you open it, click =Run= then you wait for the file dialogue to select the folder you want to convert. 
+
+I do a little text processing of image names in this one in order to clean stuff up (i.e. remove spaces and the old .XXX format). If you have specific naming concerns, especially in the archive formats (=.lif=) please let me know and I can modify it to be more generic or suit your needs. 
+ 
+** Supported image types
+- Zeiss =czi=
+- Zeiss =lsm=
+- Nikon =nd2=
+- Olympus =oib=
+- Leica =lif=
+
+** Not yet supported but planned
+- Slidebook =sld=
+- tiled lif's =lif=
+- Volocity =mvd2= 
+
+Basically anything [[https://www.openmicroscopy.org/][Bioformats]] can open
+
+
+** Inputs
+- a directory of files with one of the currently supported file endings.
+
+** Outputs
+- a new directory called =converted-tif=
+- =tif= files with formatted names in the new directory. 
+
+** Planned features
+- Leica tiled images
+
+** A note about Leica tile images and other archive formats
+
+As far as I can tell, the only upside of a Microscope vendor using a proprietary archive format (multiple images stored in one "archive"), is vendor lock in (you have to use their stuff to open or work with them). This is a problem for non-archived formats as well, but archives are much harder to work with. For example, if you take a tiled image =.lif= archives both the merged tiles and the individual slices. This is actually a nice feature, but can lead to hundreds of images in an archive, which can be VERY slow to open and is hard for me to work with to convert to =tif=. To save memory in this version, I skipped all individual tiles in =tif-convert.py=. It unfortunately still iterates through them all and will take time if you have a lot of big tiles, but none will be saved and the names will be properly formatted. I have not added this feature to convert-lif.py yet, but will in the (near) future.
+
+
+* split-channels.py
+/in progress/ 
+working on this one (2018-05-24), suggestions welcome. 
+
+** *Planned features*:
+- batch split image channels, format names appropriately
+- Save image channels to their own appropriately named folders
+
+** Inputs
+- image directory
+- list of channel names (optional)
+
+** Outputs
+- directory for each channel and single channel images in each
+
+
+* lif-tiles.py
+
+*Don't use this...* 
+I have this here so that I can eventually merge it with =tif-convert.py=.
+
+This is an experimental script that will convert and save all the individual tiles in a =lif= archive containing a tiled image in their own appropriately named directory. This is a very rough script I wrote in a hurry. I would NOT recommend using it yet. I plan to merge it with =tif-convert.py= but have not gotten the chance yet. Let me know if you need this functionality and I will fix it. 
+
+
+* Other script ideas?
+
+Don't waste your time by repeating yourself (follow DRY-- don't repeat yourself). We can work together to reduce boring work so you can spend more time with the important stuff (you know, reading, doing experiments, and beer. definitely beer). Let me know if you run into any problems or have ideas for other scripts.
