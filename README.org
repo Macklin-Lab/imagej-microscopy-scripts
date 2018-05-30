@@ -11,6 +11,8 @@ This repository contains a series of short ImageJ/Fiji scripts macros that perfo
 
 nicholas.m.george@ucdenver.edu
 
+This repository is licensed under the Creative Commons Attribution-ShareAlike 4.0. Please feel free to use the provided scripts and incorporate them into your work, but please cite us if you do. 
+
 ** General use
 
 Please ensure that you have the latest [[https://fiji.sc/][Fiji]] downloaded and installed on your computer. Fiji (batteries included ImageJ) will be the only requirement for this set of scripts. 
