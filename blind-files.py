@@ -4,7 +4,7 @@
 # updated last: 2018-06-29
 # using imagej script parameters(https://imagej.net/Script_Parameters) for the gui on this one.
 # script params below
-#@ File (label="Choose the image directory to crop", style="directory") directory
+#@ File (label="Choose the image directory to blind", style="directory") directory
 #@ String (label="What is the file ending of your image files?", choices={".tif",".jpg",".jpeg",".png", ".pdf"}, style="listBox") fileend
 
 import os

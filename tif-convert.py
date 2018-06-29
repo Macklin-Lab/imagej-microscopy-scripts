@@ -1,17 +1,13 @@
 #tif-convert.py
-"""
-author: Nick George
-email: nicholas.m.george (at) ucdenver.edu
+# Author: Nick George
+# Contact: nicholas.m.george@ucdenver.edu
+# updated last: 2018-06-29
+# using imagej script parameters(https://imagej.net/Script_Parameters) for the gui on this one.
+# script params below
+#@ File (label="Choose the image directory to convert to tif.", style="directory") directory
 
-Note: will not account for and skip tiled lifs.
-
-Updated 2018-05-24 compatible with czi, lsm, oib, and nd2
-
-Please see convert-old-naming-lif.py or nick for that particular fix.
-Simply choose the directory interactively and then images will be converted.
-"""
 from ij import IJ, WindowManager, ImagePlus
-from ij.io import DirectoryChooser, FileSaver
+from ij.io import FileSaver
 from loci.plugins import BF
 from loci.plugins.in import ImporterOptions
 from loci.formats import ImageReader
@@ -23,9 +19,7 @@ accepted_files = (".czi", ".lsm", ".lif", ".oib", ".nd2")
 
 
 # open directoy
-dc = DirectoryChooser("Choose a folder")
-#folder = "/Volumes/EXTENSION/RESTREPOLAB/images/experimental-colocalization-img/macklin_leica/2018-01-30/"
-folder = dc.getDirectory()
+folder = str(directory)
 
 # functions to make stuff easier
 
@@ -87,26 +81,23 @@ def save_tif(imps, name, new_dir):
 
 # Main script
 
-if folder is None:
-	print("User Canceled")
-else:
-	new_dir = make_dir(folder)
-	# filter for your images, get the files with the accepted endings
-	listoffiles = [ str(f) for f in os.listdir(folder) if f.endswith(accepted_files)]
-        # ignore automatically generated hidden files that start with .
-        real_names = [f for f in listoffiles if not f.startswith(".")]
-	for i in real_names:
-		image = os.path.join(folder, i)
-		print(image)
-		reader = ImageReader()
-		# set image id
-		reader.setId(image)
-		# get series list
-		series = reader.getSeriesCount()
-		# iterate through series
-		for s in range(series):
-			imps = set_options(image, s)
-			fixed_name = fix_name(imps)
-			save_tif(imps, fixed_name, new_dir)
+new_dir = make_dir(folder)
+# filter for your images, get the files with the accepted endings
+listoffiles = [ str(f) for f in os.listdir(folder) if f.endswith(accepted_files)]
+# ignore automatically generated hidden files that start with .
+real_names = [f for f in listoffiles if not f.startswith(".")]
+for i in real_names:
+	image = os.path.join(folder, i)
+	print(image)
+	reader = ImageReader()
+	# set image id
+	reader.setId(image)
+	# get series list
+	series = reader.getSeriesCount()
+	# iterate through series
+	for s in range(series):
+	       	imps = set_options(image, s)
+	       	fixed_name = fix_name(imps)
+	       	save_tif(imps, fixed_name, new_dir)
 
 print("DONE!")
