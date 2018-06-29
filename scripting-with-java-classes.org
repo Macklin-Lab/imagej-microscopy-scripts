@@ -78,12 +78,21 @@ img = IJ.ImagePlus(img_name_str)
 Cool. But how do you do things with it? Well Just above the =Constructor Summary= you will see a =Method Summary=. Methods are the functions that you can run on the image. Attributes are facts or "flags" which give you info about an image. An Object is an abstraction grouping methods, data, and attributes (facts about the data) together, and this is all summarized on the docs page above. 
 
 The abstraction is demonstrated by this diagram:
-(below will be a dot plot)
-Object<--data
-^  ^
-|  |
-|  methods
-attributes
+#+BEGIN_SRC dot :results output :file "img/object-abstraction.png" :exports results
+
+digraph {
+Object [shape=ellipse width=1.5 height = 1];
+Methods [shape=square width=0.5];
+Data [shape=square width=1];
+Attributes [shape=square width=0.5];
+Methods->Object;
+Data->Object;
+Attributes->Object;
+}
+#+END_SRC
+
+#+RESULTS:
+[[file:img/object-abstraction.png]]
 
 So if you call attributes on it you can see the info about them. For instance, how many pixels high? Can you show the image?
 (to run these examples replace =img_name_str= with an actual image path as a string). To get to =img_name_str= from the script params I showed above, you need to convert the Java file object to a python string if you want to minimize your interaction with Java classes (as I do).
