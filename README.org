@@ -11,8 +11,9 @@ This repository contains a series of short ImageJ/Fiji scripts macros that perfo
 
 nicholas.m.george@ucdenver.edu
 
-This repository is licensed under the Creative Commons Attribution-ShareAlike 4.0. Please feel free to use the provided scripts and incorporate them into your work, but please cite us if you do. 
+This repository is licensed under the *Mozilla Public License 2.0*. Free software license (https://choosealicense.com/licenses/mpl-2.0/, https://www.gnu.org/licenses/license-list.en.html#MPL-2.0) Please feel free to use the provided scripts and incorporate them into your work, but please give us a shout out if you do and share the source code of your changes. 
 
+** make your own
 If you know a little bit of a scripting language, I am working on a guide for working with Java from a script in ImageJ [[https://github.com/Macklin-Lab/imagej-microscopy-scripts/blob/master/scripting-with-java-classes.org][here]]. Please let me know if it helps or if you want any improvements!
 
 ** General use
@@ -25,7 +26,7 @@ To use the scripts, you can do any one of the following:
 2. Download the repository as a zip
 3. Click "view raw" then copy and save the file as with a =.py= extension 
 /NOTE:/ 
-Be careful, windows will often save as file.py.txt/ and it hides extensions by default. So if it is not working and Fiji is up to date, this could be the issue. 
+Be careful, windows will often save as file.py.txt and it hides extensions by default. So if it is not working and Fiji is up to date, this could be the issue. 
 
 then in Fiji click =File>Open>select-script-here.py= . The script should open in Fiji's script editor, which is shown below:
 [[file:img/blind-files.png]]
