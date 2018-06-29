@@ -1,0 +1,383 @@
+#+TITLE: How to write scripts to interact with ImageJ
+#+DATE: 2018-06-28
+#+OPTIONS: toc:nil author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
+#+PROPERTY: header-args :eval never-export
+#+LATEX_HEADER: \usepackage[margin=1.0in]{geometry}
+#+LATEX_HEADER: \hypersetup{colorlinks=true,citecolor=black,linkcolor=black,urlcolor=blue,linkbordercolor=blue,pdfborderstyle={/S/U/W 1}}
+
+* About
+ImageJ/Fiji are large, well-tested Java projects with decades of history behind them going back to [[https://imagej.net/ImageJ][NIH Image]] in the 70's. I have been using python for 3+ years now and am very comfortable with the language, so I was really excited when I saw that I could use Python on the JVM (JVM= [[https://en.wikipedia.org/wiki/Java_virtual_machine][Java Virtual Machine]]; Python on the JVM = Jython) to script ImageJ tasks such as [[https://github.com/Macklin-Lab/imagej-microscopy-scripts/blob/master/blind-files.py][blinding files]], [[https://github.com/Macklin-Lab/imagej-microscopy-scripts/blob/master/tif-convert.py][converting files to tif]], or taking ROIs from a batch of files and saving to a directory. At first, this was excruciatingly difficult for me. I knew nothing about Java (or object oriented programming in general) and I was fighting to hack together scripts using stack overflow and the forum to paste snippets together. 
+Then I incidentally learned a little more Java and OO programming with python and I started understanding what was going on a little more. I stopped fighting and started actually reading the Java docs for the classes and everything became a bit more clear. 
+
+** What this is not
+This is not a tutorial on OO or Java or anything like that. Rather, this is Fiji scripting for non-java programmers. This will assume that you know Python or a similar scripting language, but it does not assume that you know Java or OO programming principles. 
+This is basically notes to my future self to look back to when I come back in a few months to write a new one. Here we go:
+
+** First principles from an example
+
+Recently I was asked to write a simple script to crop an ROI from every image in a directory and save the cropped image to a new sub-directory within the original. Simple enough, but this is when I saw the light and started paying attention to what I was doing. 
+*** Getting user input
+First, for user input you should always use ImageJ script parameters (https://imagej.net/Script_Parameters) these are awesome. Before I did this, I would do some garbage like this:
+
+#+BEGIN_SRC python 
+from ij.io import DirectoryChooser
+### CHANGE THIS VARIABLE FOR DIFFERENT FILE TYPES!
+fileending = ".tif"
+###
+dc = DirectoryChooser("Choose a folder")
+# store chosen directory in "folder" variable
+folder = dc.getDirectory()
+
+#+END_SRC
+
+It works... but what non programmer is going to touch that line? It's hard enough to get people to open that file, let alone change source code. My goal is to have these little tools used by as many people as possible so that they don't have to suffer through repetitive, menial busy work anymore. A sure way to not accomplish that goal is by writing code like that. 
+Now, I write this at the beginning of the script:
+
+#+BEGIN_SRC python
+#@ File (label="Choose the image directory to crop", style="directory") directory
+#@ String (label="What is the file ending of the files to be cropped?", choices={".tif",".jpg",".jpeg",".png"}, style="listBox") fileend
+
+#+END_SRC
+and you get a beautiful dialogue for free like this:
+
+[[file:img/dialogue-example.png]]
+
+
+
+These script parameters can be used in any of the supported scripting languages and they make writing graphical user interfaces (GUI's) super easy. 
+
+*** Reading images and working with Java classes
+
+Once you have the input, you typically need to open an image. How can you do it?
+Well there are a lot of ways. Typically you start with the boiler plate imports (in python) like ImageJ's main package =ij=
+
+
+#+BEGIN_SRC python 
+from ij import IJ, ImagePlus
+#+END_SRC
+
+/Note/ 
+A class is a fancy programmer way of saying data with methods (functions) which operate on that data. 
+
+This imports two classes called =IJ= and =ImagePlus= from the =ij= package. How do you work with them?
+Well the first thing to do it google whatever you are trying to do and see if someone has done it before. Often that boilerplate code will serve as a great starting point. 
+If not, open this page http://javadoc.scijava.org/ImageJ1/index.html?ij/ImagePlus.html which holds the documentation for the java packages and classes. Typically whatever you want to work with is a class that inherits (uses) another one or is it's own class. =ImagePlus= is a major class that handles images. When you instantiate a class in a language like Java (or python), you need to know what it takes to /construct/ an /instance/ of that class. This is done by the constructor, which is found lower on the page in a field called =Constructor Summary= 
+
+
+#+ATTR_HTML: :width 50% :height 50%
+[[file:img/constructor.png]]
+
+As you can see there are a few options. I will briefly talk about the first two, but I think you can figure out the others. You can make an "uninitialized ImagePlus" by just calling =ImagePlus()=, or you can initialize it with an image file path or URL. 
+Below, I make an ImagePlus out of the image. 
+
+#+BEGIN_SRC python 
+from ij import IJ, ImagePlus
+img = IJ.ImagePlus(img_name_str)
+#+END_SRC
+
+Cool. But how do you do things with it? Well Just above the =Constructor Summary= you will see a =Method Summary=. Methods are the functions that you can run on the image. Attributes are facts or "flags" which give you info about an image. An Object is an abstraction grouping methods, data, and attributes (facts about the data) together, and this is all summarized on the docs page above. 
+
+The abstraction is demonstrated by this diagram:
+(below will be a dot plot)
+Object<--data
+^  ^
+|  |
+|  methods
+attributes
+
+So if you call attributes on it you can see the info about them. For instance, how many pixels high? Can you show the image?
+(to run these examples replace =img_name_str= with an actual image path as a string). To get to =img_name_str= from the script params I showed above, you need to convert the Java file object to a python string if you want to minimize your interaction with Java classes (as I do).
+
+#+BEGIN_SRC python
+#@ File (label="Choose the image directory to crop", style="directory") directory
+#@ String (label="What is the file ending of the files to be cropped?", choices={".tif",".jpg",".jpeg",".png"}, style="listBox") fileend
+
+# convert from java file obj to string
+stDir = str(directory)
+roi_f = str(roi)
+print(stDir)
+print(roi_f)
+#+END_SRC
+Run this script and you will see the directory you selected and the file displayed in the little box below the script. 
+
+Then, =img_name_str= would be an item from the list you make out of directory. I do the following to filter my lists. 
+
+
+#+BEGIN_SRC python
+import os
+
+# for safety and easier debugging
+assert os.path.exists(stDir), "Couldnt find the directory. Try using 'Browse' next time"
+assert os.path.exists(roi_f), "Couldnt find the roi file. Try using 'Browse' next time"
+
+# make list of files and filter it for relevant ones. 
+selected_files = [f for f in os.listdir(stDir) if f.endswith(fileend)]
+full_selected = [os.path.join(stDir, f)  for f in selected_files if not f.startswith(".")]
+img_str_dir = full_selected[0]
+#+END_SRC
+
+The two list comprehensions select the relevant files from the directories and then remove any files starting with ".", which my hard drives sometimes adds. 
+
+Ok, then we can access the attributes and use the methods like so:
+
+#+BEGIN_SRC python 
+from ij import IJ, ImagePlus
+img = IJ.ImagePlus(img_name_str)
+print(img.height)
+img.show()
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+# > 2464
+# > image will pop up
+#+END_EXAMPLE
+
+Cool. Note that if the attribute doesn't exist, you will get a crash. For instance, I tried the following on an image without channels:
+
+#+BEGIN_SRC python 
+from ij import IJ, ImagePlus
+img = IJ.ImagePlus(img_name_str)
+print(img.height)
+#+END_SRC
+and got the following:
+#+BEGIN_EXAMPLE
+Traceback (most recent call last):
+  File "New_.py", line 21, in <module>
+AttributeError: 'ij.ImagePlus' object has no attribute 'nChannels'
+
+	at org.python.core.Py.AttributeError(Py.java:207)
+	at org.python.core.PyObject.noAttributeError(PyObject.java:1032)
+	at org.python.core.PyObject.__getattr__(PyObject.java:1027)
+...
+#+END_EXAMPLE
+and on and on. 
+
+*** How do you know what to do next???
+    A great place to start, as recommended in the on-line documentation is the =Macro Recorder=. This is a wonderful tool that will literally record everything you do and provide the exact commands to do it again. The default is the commands for an imageJ macro mode, but we don't want to use that. Luckily, someone in the forum pointed out that you can click the "Macro" dropdown and record in a few different languages! Select "JavaScript" and you will get commands that will work in Python! Open the Macro Recorder, open an image, then run through the steps you want to automate. For this task it was: Draw ROI, Crop, Save. 
+
+
+[[file:img/macro-commands.png]]
+
+
+Now we break down the problem. We already opened the image and saved it in an =img= variable. It looks like we need to run the method =setRoi()=  with the ROI shape in order to draw it on the image. So step one will be decoding the ROI file. Next we simply do =IJ.run(img, "Crop" "")=, where we just pass the =img= object after setting the ROI, and something similar for saving. Very straightforward. Now we attack the parts one by one. 
+1. +Read the image as an ImagePlus+
+2. Decode ROI and store coordinates in variable.
+3. Run =setRoi()=
+4. Run the =crop= command
+5. Save the image
+
+*** Decode the ROI
+
+    Nice. Now I have an ROI file that I will use to crop. So I look on the left under "All classes" until I find the ROI section. Looking through a few options I think =RoiDecoder=  (http://javadoc.scijava.org/ImageJ1/ij/io/RoiDecoder.html) is what I need to read ROI's. 
+However, looking at the top of that class's page, you see that it is NOT in the IJ or ImagePlus classes (namespaces), but rather under a different ij.io package.
+
+[[file:img/roi-decoder.png]] 
+
+In order to use it, you import it like any other python package from the package path listed above. 
+The constructor takes an roi path, so I'll pass that in and see what happens when I call the =getRoi()= method. Our script so far is below. 
+
+#+BEGIN_SRC python
+#@ File (label="Choose the image directory to crop", style="directory") directory
+#@ String (label="What is the file ending of your image files?", choices={".tif",".jpg",".jpeg",".png"}, style="listBox") fileend
+#@ File (label="Choose the pre-made ROI file", style="extensions:roi" ) roi
+import os
+from ij import IJ, ImagePlus
+from ij.io import RoiDecoder
+
+
+# convert from java file obj to string
+stDir = str(directory)
+roi_f = str(roi)
+
+assert os.path.exists(stDir), "Couldnt find the directory. Try using 'Browse' next time"
+assert os.path.exists(roi_f), "Couldnt find the roi file. Try using 'Browse' next time"
+
+# make list of files and filter it for relevant ones. 
+selected_files = [f for f in os.listdir(stDir) if f.endswith(fileend)]
+full_selected = [os.path.join(stDir, f)  for f in selected_files if not f.startswith(".")]
+img_name_str = full_selected[0]
+img = ImagePlus(img_name_str)
+roi_obj = RoiDecoder(roi_f)
+print(roi_obj.getRoi())
+print(type(roi_obj.getRoi()))
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+#> Roi[Polygon, x=528, y=372, width=1284, height=1284]
+#> <type 'ij.gui.PolygonRoi'>
+#+END_EXAMPLE
+Awesome. Now we have to figure out how to work with the =ij.gui.PolygonRoi=. Here I tried a few different things, like accessing just using the =.x= method or =.height=, but those both threw errors. Looking through the methods for  the PolygonRoi (http://javadoc.scijava.org/ImageJ1/ij/gui/PolygonRoi.html), I see that the =getPolygon()= method would probably be the most useful. When I use that, I get a regular Java polygon object
+#+BEGIN_SRC python 
+print(roi_obj.getRoi().getPolygon())
+
+#+END_SRC
+=#> java.awt.Polygon@17e8871=
+
+You can look through the docs for that (http://www.java2s.com/Code/Java/2D-Graphics-GUI/Polygonwithfloatcoordinates.htm), and do the following: 
+#+BEGIN_SRC python
+print(roi_obj.getRoi().getPolygon().getBounds().height)
+print(roi_obj.getRoi().getPolygon().getBounds().width)
+print(roi_obj.getRoi().getPolygon().getBounds().x)
+print(roi_obj.getRoi().getPolygon().getBounds().y)
+#+END_SRC
+
+#+BEGIN_EXAMPLE
+#>1284
+#>1284
+#>528
+#>372
+#+END_EXAMPLE
+That does it. But it seems pretty verbose. After some playing around with the attributes from the =getRoi()= method, I came up with the following:
+
+#+BEGIN_SRC python 
+print(roi_obj.getRoi().getBounds().height)
+print(roi_obj.getRoi().getBounds().width)
+print(roi_obj.getRoi().getBounds().x)
+print(roi_obj.getRoi().getBounds().y)
+#+END_SRC
+
+Which gives identical output. 
+
+#+BEGIN_EXAMPLE
+#>1284
+#>1284
+#>528
+#>372
+#+END_EXAMPLE
+
+Awesome! Now we can extract those into regular python variables and we are almost done!
+The code below is a function to do that and return the 
+
+#+BEGIN_SRC python
+def decode_roi(roi_file):
+    roi_obj = RoiDecoder(roi_file)
+    x = roi_obj.getRoi().getPolygon().getBounds().x
+    y = roi_obj.getRoi().getPolygon().getBounds().y
+    width = roi_obj.getRoi().getPolygon().getBounds().width
+    height = roi_obj.getRoi().getPolygon().getBounds().height
+    return x,y,width,height    
+
+
+#+END_SRC
+
+1. +Read the image as an ImagePlus+
+2. +Decode ROI and store coordinates in variable.+
+3. Run =setRoi()=
+4. Run the =crop= command
+5. Save the image
+
+*** Set ROI and crop
+Going back to our JavaScript Macro recorder commands, the rest of the steps should be very straightforward. 
+
+#+BEGIN_SRC python
+imp.setRoi(x,y,width,height);
+IJ.run(imp,"Crop", "");
+IJ.saveAs(img, "Tiff" ,"path/you/are/saving.tif");
+#+END_SRC
+
+So just to test, try the following:
+
+#+BEGIN_SRC python
+img = ImagePlus(img_name_str)
+x,y,w,h = decode_roi(roi_f)
+img.setRoi(x, y, w,h)
+IJ.run(img, "Crop", "")
+img.show()
+#+END_SRC
+
+You should see the cropped image on the screen!
+
+[[file:img/cropped.png]]
+
+
+1. +Read the image as an ImagePlus+
+2. +Decode ROI and store coordinates in variable.+
+3. +Run =setRoi()=+
+4. +Run the =crop= command+
+5. Save the image
+
+
+The rest is just straightforward python, no more Java class stuff. 
+The finished code is at the bottom of this file, but it will also be on the Macklin Lab Github page.
+
+
+#+BEGIN_SRC python
+# a simple script to apply the same ROI to a directory full of images.
+# select the image directoy
+# select the roi
+# Author: Nick George
+# contact: nicholas.m.george@ucdenver.edu
+# updated last: 2018-06-29
+# using imagej script parameters(https://imagej.net/Script_Parameters) for the gui on this one.
+# script params below
+#@ File (label="Choose the image directory to crop", style="directory") directory
+#@ String (label="What is the file ending of your image files?", choices={".tif",".jpg",".jpeg",".png"}, style="listBox") fileend
+#@ File (label="Choose the pre-made ROI file", style="extensions:roi" ) roi
+import os
+from ij import IJ, ImagePlus
+from ij.io import RoiDecoder
+
+def decode_roi(roi_file):
+    roi_obj = RoiDecoder(roi_file)
+    x = roi_obj.getRoi().getPolygon().getBounds().x
+    y = roi_obj.getRoi().getPolygon().getBounds().y
+    width = roi_obj.getRoi().getPolygon().getBounds().width
+    height = roi_obj.getRoi().getPolygon().getBounds().height
+    return x,y,width,height    
+
+def make_dir(folder):
+	"""
+	make new file directory for extracted tifs
+	if folder exists, just return the path.
+	"""
+	new_dir = os.path.join(folder, "cropped")
+	if os.path.exists(new_dir):
+		return new_dir
+	else:
+		os.mkdir(new_dir)
+		return new_dir
+
+		
+def make_name(str_name, fileend):
+	"""Makes the new name for the file. 
+	"""
+	new_name = str_name.replace(fileend, "") +"_cropped" + fileend
+	just_name = os.path.split(new_name)[-1]
+	return just_name
+
+##### Begin script #####
+
+# convert from java file obj to string
+stDir = str(directory)
+roi_f = str(roi)
+
+assert os.path.exists(stDir), "Couldnt find the directory. Try using 'Browse' next time"
+assert os.path.exists(roi_f), "Couldnt find the roi file. Try using 'Browse' next time"
+
+# make list of files and filter it for relevant ones. 
+selected_files = [f for f in os.listdir(stDir) if f.endswith(fileend)]
+full_selected = [os.path.join(stDir, f)  for f in selected_files if not f.startswith(".")]
+
+# this only needs to be done once as we are using the same ROI for each image
+X,Y,W,H = decode_roi(roi_f)
+# make new folder
+new_folder = make_dir(stDir)
+print("saving cropped images to: {}".format(new_folder))
+for cropme in full_selected:
+    print("Processing: {}".format(cropme))
+    img = ImagePlus(cropme)
+    img.setRoi(X,Y,W,H)
+    IJ.run(img, "Crop", "")
+    new_name = os.path.join(new_folder,make_name(cropme, fileend))
+    IJ.saveAs(img, "Tiff", new_name)
+
+print("Done")
+#+END_SRC
+
+1. +Read the image as an ImagePlus+
+2. +Decode ROI and store coordinates in variable.+
+3. +Run =setRoi()=+
+4. +Run the =crop= command+
+5. +Save the image+
+Crossing out lists is fun! 
+Keep an eye out for more of these as I tackle more problems of this sort. 
