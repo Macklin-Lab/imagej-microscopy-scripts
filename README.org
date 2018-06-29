@@ -13,6 +13,8 @@ nicholas.m.george@ucdenver.edu
 
 This repository is licensed under the Creative Commons Attribution-ShareAlike 4.0. Please feel free to use the provided scripts and incorporate them into your work, but please cite us if you do. 
 
+If you know a little bit of a scripting language, I am working on a guide for working with Java from a script in ImageJ [[https://github.com/Macklin-Lab/imagej-microscopy-scripts/blob/master/scripting-with-java-classes.org][here]]. Please let me know if it helps or if you want any improvements!
+
 ** General use
 
 Please ensure that you have the latest [[https://fiji.sc/][Fiji]] downloaded and installed on your computer. Fiji (batteries included ImageJ) will be the only requirement for this set of scripts. 
@@ -21,29 +23,23 @@ These are primarily Jython (Python on the Java interpreter) scripts that can be 
 To use the scripts, you can do any one of the following: 
 1. clone/fork this repository
 2. Download the repository as a zip
-3. Click "view raw" then copy and save the file as with a =.py= extension
+3. Click "view raw" then copy and save the file as with a =.py= extension 
+/NOTE:/ 
+Be careful, windows will often save as file.py.txt/ and it hides extensions by default. So if it is not working and Fiji is up to date, this could be the issue. 
 
 then in Fiji click =File>Open>select-script-here.py= . The script should open in Fiji's script editor, which is shown below:
 [[file:img/blind-files.png]]
 
-You will notice that the scripts should be well commented (to an annoying degree) with notes on how to use them in the notes at the top. If anything needs to be changed by the user, it will be indicated clearly at the top of the script in the comments. For example, in =blink-files.py= you can clearly see the following code between line numbers 20-28:
-
-#+BEGIN_SRC python :results output
-import os
-import uuid
-import shutil
-import sys
-from ij.io import DirectoryChooser
-
-### CHANGE THIS VARIABLE FOR DIFFERENT FILE TYPES!
-fileending = ".tif"
-###
-
-#+END_SRC
-
-So if the file you are blinding doesn't end in =.tif= then you will need to change this variable accordingly. -- this is one place I will add more graphical interaction in the future. 
-
 Now you simply click "Run" button indicated in the example image and the script should give you a "Choose directory" dialogue (after a few seconds) and run. In future versions I will make them more interactive, but they are pretty simple so I don't think a rich user experience is necessary...
+I use imageJ script parameters https://imagej.net/Script_Parameters for UI design with these Jython scripts. Scrip parameters are awesome. Let me know if you want other options set. 
+
+* take-roi.py 
+** Inputs
+- a directory of images
+- a file type
+- an ROI
+** Outputs
+A subfolder called =cropped= with the cropped images. 
 
 * blind-files.py
 
@@ -52,7 +48,7 @@ Have you ever gone through a big directory of files for analysis, created random
 To use this script, just download it, save it somewhere as =.py= and open it with the script editor in Fiji. When you click =Run=, the script will make a new directory in your chosen directory called =blinded= and will copy your images with new random names into it. In the original folder you will find a =KEY.csv=, which contains a column with the old names and a column with the new names. Inside the new =blinded= directory you will find your photos and a =blinded-key.csv= file with the blinded names on it as a list. The blinded-key is just so you can then write notes or whatever next to the blinded names, then you can easily merge it with =KEY.csv= when you want to finish analysis. Since this script copies the images, I haven't had the need to un-blind the images, but if you want I can make one of those as well. 
 
 ** Inputs
-- a directory of files with the appropriate file endings (=.tif= is the default, but this can be changed by changing the variable on line 27)
+- a directory of files with the appropriate file endings (=.tif= is the default, but a bunch of endings are there). You can really use any file ending, just let me know if you want another added. 
 ** outputs
 - =blinded= directory with blinded images
 - =blinded-key.csv= with the blinded image names
@@ -93,9 +89,16 @@ Basically anything [[https://www.openmicroscopy.org/][Bioformats]] can open
 ** A note about Leica tile images and other archive formats
 
 As far as I can tell, the only upside of a Microscope vendor using a proprietary archive format (multiple images stored in one "archive"), is vendor lock in (you have to use their stuff to open or work with them). This is a problem for non-archived formats as well, but archives are much harder to work with. For example, if you take a tiled image =.lif= archives both the merged tiles and the individual slices. This is actually a nice feature, but can lead to hundreds of images in an archive, which can be VERY slow to open and is hard for me to work with to convert to =tif=. To save memory in this version, I skipped all individual tiles in =tif-convert.py=. It unfortunately still iterates through them all and will take time if you have a lot of big tiles, but none will be saved and the names will be properly formatted. I have not added this feature to convert-lif.py yet, but will in the (near) future.
+* Other script ideas?
+
+Don't waste your time by repeating yourself (follow DRY-- don't repeat yourself). We can work together to reduce boring work so you can spend more time with the important stuff (you know, reading, doing experiments, and beer. definitely beer). Let me know if you run into any problems or have ideas for other scripts.
 
 
-* split-channels.py
+** Write your own
+
+If you know a little bit of a scripting language, I am working on a guide for working with Java from a script in ImageJ [[https://github.com/Macklin-Lab/imagej-microscopy-scripts/blob/master/scripting-with-java-classes.org][here]]. Please let me know if it helps or if you want any improvements!
+
+* TODO split-channels.py
 /in progress/ 
 working on this one (2018-05-24), suggestions welcome. 
 
@@ -110,15 +113,9 @@ working on this one (2018-05-24), suggestions welcome.
 ** Outputs
 - directory for each channel and single channel images in each
 
-
-* lif-tiles.py
+* TODO lif-tiles.py
 
 *Don't use this...* 
 I have this here so that I can eventually merge it with =tif-convert.py=.
 
 This is an experimental script that will convert and save all the individual tiles in a =lif= archive containing a tiled image in their own appropriately named directory. This is a very rough script I wrote in a hurry. I would NOT recommend using it yet. I plan to merge it with =tif-convert.py= but have not gotten the chance yet. Let me know if you need this functionality and I will fix it. 
-
-
-* Other script ideas?
-
-Don't waste your time by repeating yourself (follow DRY-- don't repeat yourself). We can work together to reduce boring work so you can spend more time with the important stuff (you know, reading, doing experiments, and beer. definitely beer). Let me know if you run into any problems or have ideas for other scripts.
