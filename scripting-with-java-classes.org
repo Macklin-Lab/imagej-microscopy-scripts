@@ -146,7 +146,7 @@ Cool. Note that if the attribute doesn't exist, you will get a crash. For instan
 #+BEGIN_SRC python 
 from ij import IJ, ImagePlus
 img = IJ.ImagePlus(img_name_str)
-print(img.height)
+print(img.nChannels)
 #+END_SRC
 and got the following:
 #+BEGIN_EXAMPLE
