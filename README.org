@@ -7,17 +7,17 @@
 
 ** Welcome to the Macklin lab macros, scripts, and other microscopy processing fun!
 
-This repository contains a series of short ImageJ/Fiji scripts macros that perform tedious image manipulation tasks common in our lab. This central README will contain documentation for using all of the scripts. If you find problems or would like to make improvements, please fork the repository and submit a pull request. Also, you can email me (Nick) at:
+This repository contains a series of short ImageJ/Fiji plugins and scripts that perform tedious image manipulation tasks common in our lab. This central README contains documentation for using all of the plugins. If you find problems or would like to make improvements, please fork the repository and submit a pull request. If you don't want to modify the code, you can also email me (Nick) at:
 
 nicholas.m.george@ucdenver.edu
 
-This repository is licensed under the *Mozilla Public License 2.0*. Free software license (https://choosealicense.com/licenses/mpl-2.0/, https://www.gnu.org/licenses/license-list.en.html#MPL-2.0) Please feel free to use the provided scripts and incorporate them into your work, but please give us a shout out if you do and share the source code of your changes. 
+This repository is licensed under the *Mozilla Public License 2.0*. Free software license (https://choosealicense.com/licenses/mpl-2.0/, https://www.gnu.org/licenses/license-list.en.html#MPL-2.0) Please feel free to use the provided code and incorporate them into your work, but please give us a shout out if you do and share the source code of your changes. 
 
 ** make your own
 If you know a little bit of a scripting language, I am working on a guide for working with Java from a script in ImageJ [[https://github.com/Macklin-Lab/imagej-microscopy-scripts/blob/master/scripting-with-java-classes.org][here]]. Please let me know if it helps or if you want any improvements!
 
 * Installation
-  *Update!* I made an update site for these plugins. Now, to install open [[https://fiji.sc/][Fiji]], and under the =Help= menu click =Update=. Once Fiji finishes checking for updates do the following:
+  *Update!* I made an [[https://imagej.net/List_of_update_sites#Available_update_sites][update site]] (search =Lab-utility-plugins=) for these plugins. Now, to install open [[https://fiji.sc/][Fiji]], and under the =Help= menu click =Update=. Once Fiji finishes checking for updates do the following:
 1. Click =Manage update sites=
 2. Click =Add update site=
 3. Paste =http://sites.imagej.net/Georgenm/= into the spot.
@@ -28,12 +28,13 @@ If you know a little bit of a scripting language, I am working on a guide for wo
 
 Please ensure that you have the latest [[https://fiji.sc/][Fiji]] downloaded and installed on your computer. Fiji (batteries included ImageJ) will be the only requirement for this set of scripts. You will now get updates/enhancements automatically. 
 
-  /Note/ 
-I use imageJ script parameters https://imagej.net/Script_Parameters for UI design with these Jython scripts. Scrip parameters are awesome. Let me know if you want other options set. 
+ /Note:/
+ 
+I use ImageJ script parameters https://imagej.net/Script_Parameters for UI design with these Jython scripts. Scrip parameters are awesome. Let me know if you want other options set. 
 
 * blind-files
 
-This plug-in blinds files-- that's it. It uses the Jython implementation of universally unique identifiers ([[https://github.com/jythontools/jython/blob/master/lib-python/2.7/uuid.py][UUID]]s) to generate the new, unique blinded names for your files, and then simply copies them to a newly created directory. 
+This plugin blinds files-- that's it. It uses the Jython implementation of universally unique identifiers ([[https://github.com/jythontools/jython/blob/master/lib-python/2.7/uuid.py][UUID]]s) to generate the new, unique blinded names for your files, and then simply copies them to a newly created directory. 
 
 When you launch it, you will see the following interface:
 [[file:img/blind-files-interface.png]]
@@ -52,10 +53,46 @@ An example input directory may look like this:
 2. In the original folder you will find a =KEY.csv=, which contains a column with the old names and a column with the new names.
 3. Inside the new =blinded= directory you will find your photos and a =blinded-key.csv= file with the blinded names on it as a list. The blinded-key is just so you can then write notes or whatever next to the blinded names, then you can easily merge it with =KEY.csv= in excel or whatever when you want to un-blind the results. 
 
-This plug-in does not modify the original files, it only copies and renames the files. For this reason, I haven't had the need to un-blind the images, as you have keys and retain the originals. If you want to unblind them too, I can add that but let me know why.
+This plugin does not modify the original files, it only copies and renames the files. For this reason, I haven't had the need to un-blind the images, as you have keys and retain the originals. If you want to unblind them too, I can add that but let me know why.
 
-Below is a picture of the folder structure after running this plug-in. 
+Below is a picture of the folder structure after running this plugin. 
 [[file:img/blind-files-output.png]]
+* tif-convert
+*Under active development!* 
+
+This script is meant to use Fiji and bioformats to convert images from many different proprietary vendor types to the easy to work with =tif= format. 
+** Supported image types
+- Zeiss =czi=
+- Zeiss =lsm=
+- Nikon =nd2=
+- Olympus =oib=
+- Leica =lif=
+
+*Not yet supported but planned*
+- Slidebook =sld=
+- tiled lif's =lif=
+- Volocity =mvd2= 
+Basically anything [[https://www.openmicroscopy.org/][Bioformats]] can open. Let me know what you need. 
+
+** Inputs
+1. a directory of files with one of the currently supported file endings.
+
+The UI for this scipt is very minimal. You simply get a choose a folder dialogue.
+Here is a picture of an example folder with all the supported file types in it:
+[[file:img/tif-convert-input.png]]
+
+
+** Outputs
+1. a new directory called =converted-tif=
+2. =tif= files with formatted names in the new directory. 
+I do a little text processing of image names in this one in order to clean stuff up (i.e. remove spaces and the old .XXX format). If you have specific naming concerns, especially in the archive formats (=.lif=) please let me know and I can modify it to be more generic or suit your needs. 
+
+Below is what your folder will look like after running it. 
+[[file:img/tif-convert-output.png]]
+
+** Planned features
+- Leica tiled images
+Right now, if you want separate tiles saved this script won't work. It will continually overwrite the individual tiles. The /tiled/ image is fine, just the individual tiles aren't converted correctly.
 
 * take-roi
 ** Inputs
@@ -64,41 +101,6 @@ Below is a picture of the folder structure after running this plug-in.
 - an ROI
 ** Outputs
 A subfolder called =cropped= with the cropped images. 
-* tif-convert
-*Active development!* 
-
-This script is meant to use Fiji and bioformats to convert images from many different proprietary vendor types to the easy to work with =tif= format. This scipt is similar to =blind-files.py= in that you open it, click =Run= then you wait for the file dialogue to select the folder you want to convert. 
-
-I do a little text processing of image names in this one in order to clean stuff up (i.e. remove spaces and the old .XXX format). If you have specific naming concerns, especially in the archive formats (=.lif=) please let me know and I can modify it to be more generic or suit your needs. 
- 
-** Supported image types
-- Zeiss =czi=
-- Zeiss =lsm=
-- Nikon =nd2=
-- Olympus =oib=
-- Leica =lif=
-
-** Not yet supported but planned
-- Slidebook =sld=
-- tiled lif's =lif=
-- Volocity =mvd2= 
-
-Basically anything [[https://www.openmicroscopy.org/][Bioformats]] can open
-
-
-** Inputs
-- a directory of files with one of the currently supported file endings.
-
-** Outputs
-- a new directory called =converted-tif=
-- =tif= files with formatted names in the new directory. 
-
-** Planned features
-- Leica tiled images
-
-** A note about Leica tile images and other archive formats
-
-As far as I can tell, the only upside of a Microscope vendor using a proprietary archive format (multiple images stored in one "archive"), is vendor lock in (you have to use their stuff to open or work with them). This is a problem for non-archived formats as well, but archives are much harder to work with. For example, if you take a tiled image =.lif= archives both the merged tiles and the individual slices. This is actually a nice feature, but can lead to hundreds of images in an archive, which can be VERY slow to open and is hard for me to work with to convert to =tif=. To save memory in this version, I skipped all individual tiles in =tif-convert.py=. It unfortunately still iterates through them all and will take time if you have a lot of big tiles, but none will be saved and the names will be properly formatted. I have not added this feature to convert-lif.py yet, but will in the (near) future.
 * Other script ideas?
 
 Don't waste your time by repeating yourself (follow DRY-- don't repeat yourself). We can work together to reduce boring work so you can spend more time with the important stuff (you know, reading, doing experiments, and beer. definitely beer). Let me know if you run into any problems or have ideas for other scripts.
