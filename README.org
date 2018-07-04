@@ -16,22 +16,19 @@ This repository is licensed under the *Mozilla Public License 2.0*. Free softwar
 ** make your own
 If you know a little bit of a scripting language, I am working on a guide for working with Java from a script in ImageJ [[https://github.com/Macklin-Lab/imagej-microscopy-scripts/blob/master/scripting-with-java-classes.org][here]]. Please let me know if it helps or if you want any improvements!
 
-** General use
+* Installation
+  *Update!* I made an update site for these plugins. Now, to install open [[https://fiji.sc/][Fiji]], and under the =Help= menu click =Update=. Once Fiji finishes checking for updates do the following:
+1. Click =Manage update sites=
+2. Click =Add update site=
+3. Paste =http://sites.imagej.net/Georgenm/= into the spot.
+4. Now click anywhere else, then click =Close=.
+5. On the new screen click =Apply Changes= and re-start Fiji. 
+(summarized in the image below)
+[[file:img/update-site.png]] 
 
-Please ensure that you have the latest [[https://fiji.sc/][Fiji]] downloaded and installed on your computer. Fiji (batteries included ImageJ) will be the only requirement for this set of scripts. 
+Please ensure that you have the latest [[https://fiji.sc/][Fiji]] downloaded and installed on your computer. Fiji (batteries included ImageJ) will be the only requirement for this set of scripts. You will now get updates/enhancements automatically. 
 
-These are primarily Jython (Python on the Java interpreter) scripts that can be run via Fiji. 
-To use the scripts, you can do any one of the following: 
-1. clone/fork this repository
-2. Download the repository as a zip
-3. Click "view raw" then copy and save the file as with a =.py= extension 
-/NOTE:/ 
-Be careful, windows will often save as file.py.txt and it hides extensions by default. So if it is not working and Fiji is up to date, this could be the issue. 
-
-then in Fiji click =File>Open>select-script-here.py= . The script should open in Fiji's script editor, which is shown below:
-[[file:img/blind-files.png]]
-
-Now you simply click "Run" button indicated in the example image and the script should give you a "Choose directory" dialogue (after a few seconds) and run. In future versions I will make them more interactive, but they are pretty simple so I don't think a rich user experience is necessary...
+  /Note/ 
 I use imageJ script parameters https://imagej.net/Script_Parameters for UI design with these Jython scripts. Scrip parameters are awesome. Let me know if you want other options set. 
 
 * take-roi.py 
@@ -93,7 +90,6 @@ As far as I can tell, the only upside of a Microscope vendor using a proprietary
 * Other script ideas?
 
 Don't waste your time by repeating yourself (follow DRY-- don't repeat yourself). We can work together to reduce boring work so you can spend more time with the important stuff (you know, reading, doing experiments, and beer. definitely beer). Let me know if you run into any problems or have ideas for other scripts.
-
 
 ** Write your own
 
