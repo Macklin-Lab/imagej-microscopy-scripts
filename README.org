@@ -31,28 +31,40 @@ Please ensure that you have the latest [[https://fiji.sc/][Fiji]] downloaded and
   /Note/ 
 I use imageJ script parameters https://imagej.net/Script_Parameters for UI design with these Jython scripts. Scrip parameters are awesome. Let me know if you want other options set. 
 
-* take-roi.py 
+* blind-files
+
+This plug-in blinds files-- that's it. It uses the Jython implementation of universally unique identifiers ([[https://github.com/jythontools/jython/blob/master/lib-python/2.7/uuid.py][UUID]]s) to generate the new, unique blinded names for your files, and then simply copies them to a newly created directory. 
+
+When you launch it, you will see the following interface:
+[[file:img/blind-files-interface.png]]
+
+** /Inputs/ 
+1. Select the folder containing the images you want to blind.
+2. file ending of the files you want to blind.
+   - /Note/ Sometimes folders contain other files that you don't want to blind as part of your analysis. For example, I typically have a metadata file along with the tif's that I don't need to blind. For this reason, I filter based on file ending-- though there is no technical reason why you need to do that. If you want other file types supported, please let me know. I can also just add an empty field for you to enter your file endings of choice, but for now I think this works.
+
+An example input directory may look like this:
+[[file:img/blind-files-input.png]]
+
+** /Outputs/ 
+
+1. The plugin will make a new folder in your chosen folder called =blinded= and will copy your images with new random names into it.
+2. In the original folder you will find a =KEY.csv=, which contains a column with the old names and a column with the new names.
+3. Inside the new =blinded= directory you will find your photos and a =blinded-key.csv= file with the blinded names on it as a list. The blinded-key is just so you can then write notes or whatever next to the blinded names, then you can easily merge it with =KEY.csv= in excel or whatever when you want to un-blind the results. 
+
+This plug-in does not modify the original files, it only copies and renames the files. For this reason, I haven't had the need to un-blind the images, as you have keys and retain the originals. If you want to unblind them too, I can add that but let me know why.
+
+Below is a picture of the folder structure after running this plug-in. 
+[[file:img/blind-files-output.png]]
+
+* take-roi
 ** Inputs
 - a directory of images
 - a file type
 - an ROI
 ** Outputs
 A subfolder called =cropped= with the cropped images. 
-
-* blind-files.py
-
-Have you ever gone through a big directory of files for analysis, created random names for them, copied the old and new name to a key, then renamed the files? I have. Then I figured out how to program so I wouldn't ever have to do that again. 
-
-To use this script, just download it, save it somewhere as =.py= and open it with the script editor in Fiji. When you click =Run=, the script will make a new directory in your chosen directory called =blinded= and will copy your images with new random names into it. In the original folder you will find a =KEY.csv=, which contains a column with the old names and a column with the new names. Inside the new =blinded= directory you will find your photos and a =blinded-key.csv= file with the blinded names on it as a list. The blinded-key is just so you can then write notes or whatever next to the blinded names, then you can easily merge it with =KEY.csv= when you want to finish analysis. Since this script copies the images, I haven't had the need to un-blind the images, but if you want I can make one of those as well. 
-
-** Inputs
-- a directory of files with the appropriate file endings (=.tif= is the default, but a bunch of endings are there). You can really use any file ending, just let me know if you want another added. 
-** outputs
-- =blinded= directory with blinded images
-- =blinded-key.csv= with the blinded image names
-- =KEY.csv= Key of original names and corresponding blinded names.
-
-* tif-convert.py
+* tif-convert
 *Active development!* 
 
 This script is meant to use Fiji and bioformats to convert images from many different proprietary vendor types to the easy to work with =tif= format. This scipt is similar to =blind-files.py= in that you open it, click =Run= then you wait for the file dialogue to select the folder you want to convert. 
