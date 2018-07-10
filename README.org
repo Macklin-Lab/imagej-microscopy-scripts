@@ -32,6 +32,13 @@ Summarized below:
 
 Please ensure that you have the latest [[https://fiji.sc/][Fiji]] downloaded and installed on your computer. Fiji (batteries included ImageJ) will be the only requirement for this set of plugins. You will now get updates automatically. 
 
+*MacOSX INFO!* 
+Due to a possible bug in a recent Fiji update, if you add this from a Mac the plugins will not appear in your =Plugins= folder. As a workaround, I added the files to the =scripts/Plugins= folder as well, so now 6 files will be added. On a Mac, you will now find the plugins in the main menu at the top of the screen like so:
+
+[[file:img/mac-workaround.png]]
+
+I will remove this as soon as this issue is resolved in Fiji, though they will work the same. 
+
  /Note:/
  
 I use ImageJ script parameters https://imagej.net/Script_Parameters for UI design with these Jython (python on the JVM) scripts. Scrip parameters are awesome. Let me know if you want other options set. 
