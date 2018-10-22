@@ -104,9 +104,14 @@ Below is what your folder will look like after running it.
 - Leica tiled images
 Right now, if you want separate tiles saved this script won't work. It will continually overwrite the individual tiles. The /tiled/ image is fine, just the individual tiles aren't converted correctly.
 * Batch projector
+
 [[file:img/batch-project.png]]
+
 Very simple script that will batch project your images using one of the offered imageJ methods. This will format the names nicely and save them in a sub directory as well.
-*NOTE* If you are doing something like fluorescence intensity measurements on projected images, you need to project with *SUM* projection rather than max projection. See: http://forum.imagej.net/t/measuring-fluorescence-intensity-on-a-z-stack/7485
+
+*NOTE* If you are doing something like fluorescence intensity measurements on projected images, you need to project with *SUM* projection rather than max projection. 
+See: http://forum.imagej.net/t/measuring-fluorescence-intensity-on-a-z-stack/7485 and 
+https://www.ncbi.nlm.nih.gov/pubmed/17210054
 There are numerous other caveats to fluorescence intensity as well... more here in the future. 
 
 * take-roi
