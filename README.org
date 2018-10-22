@@ -32,16 +32,10 @@ Summarized below:
 
 Please ensure that you have the latest [[https://fiji.sc/][Fiji]] downloaded and installed on your computer. Fiji (batteries included ImageJ) will be the only requirement for this set of plugins. You will now get updates automatically. 
 
-*MacOSX INFO!* 
-+Due to a possible bug in a recent Fiji update, if you add this from a Mac the plugins will not appear in your =Plugins= folder (see http://forum.imagej.net/t/plugin-scripts-no-longer-appear-in-plugin-menu-on-mac-osx/11924/2 and http://forum.imagej.net/t/missing-plugins-menu-item/11888?u=imagejan). As a workaround, I added the files to the =scripts/Plugins= folder as well, so now 6 files will be added.+
-Note this was addressed (see the links above), but I will keep this interface as is for now, I kind of like it! 
-On a Mac, you will now find the plugins in the main menu at the top of the screen like so:
+The plugins will be in the "Plugin" menu all the way at the bottom. On Mac OSX it looks like this:
+[[file:img/plugin-location.png]]
 
-[[file:img/mac-workaround.png]]
-
-+I will remove this as soon as this issue is resolved in Fiji, though they will work the same.+
-
- /Note:/
+/Note:/
  
 I use ImageJ script parameters https://imagej.net/Script_Parameters for UI design with these Jython (python on the JVM) scripts. Scrip parameters are awesome. Let me know if you want other options set. 
 
@@ -162,7 +156,11 @@ working on this one (2018-07-03), suggestions welcome.
 
 * TODO lif-tiles
 
-*Don't use this...* 
+*!Don't use this...!* 
 I have this here so that I can eventually merge it with =tif-convert=.
 
 This is an experimental script that will convert and save all the individual tiles in a =lif= archive containing a tiled image in their own appropriately named directory. This is a very rough script I wrote in a hurry. I would NOT recommend using it yet. I plan to merge it with =tif-convert= but have not gotten the chance yet. Let me know if you need this functionality and I will fix it. 
+* CHANGELOG
+** 2018-10-22
+- updated =blind-files_.py= to accept other common microscopy file endings per https://github.com/Macklin-Lab/imagej-microscopy-scripts/issues/1 
+- added console logging to =blind-files_.py= and =tif-convert.py= 
