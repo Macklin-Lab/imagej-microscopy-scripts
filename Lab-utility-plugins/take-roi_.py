@@ -19,7 +19,7 @@ def decode_roi(roi_file):
     y = roi_obj.getRoi().getPolygon().getBounds().y
     width = roi_obj.getRoi().getPolygon().getBounds().width
     height = roi_obj.getRoi().getPolygon().getBounds().height
-    return x,y,width,height    
+    return x,y,width,height
 
 def make_dir(folder):
 	"""
@@ -33,9 +33,9 @@ def make_dir(folder):
 		os.mkdir(new_dir)
 		return new_dir
 
-		
+
 def make_name(str_name, fileend):
-	"""Makes the new name for the file. 
+	"""Makes the new name for the file.
 	"""
 	new_name = str_name.replace(fileend, "") +"_cropped" + fileend
 	just_name = os.path.split(new_name)[-1]
@@ -50,7 +50,7 @@ roi_f = str(roi)
 assert os.path.exists(stDir), "Couldnt find the directory. Try using 'Browse' next time"
 assert os.path.exists(roi_f), "Couldnt find the roi file. Try using 'Browse' next time"
 
-# make list of files and filter it for relevant ones. 
+# make list of files and filter it for relevant ones.
 selected_files = [f for f in os.listdir(stDir) if f.endswith(fileend)]
 full_selected = [os.path.join(stDir, f)  for f in selected_files if not f.startswith(".")]
 
