@@ -3,8 +3,7 @@
 #@ File (label="Choose the image directory to make composite", style="directory") directory
 import os
 from ij import IJ
-from ij.io import FileSaver
-from ij.plugin import ChannelSplitter
+#from ij.io import FileSaver
 
 # For testing:
 # set display mode is what you are looking for: https://javadoc.scijava.org/ImageJ1/ij/ImagePlus.html#getDisplayMode--
@@ -41,7 +40,7 @@ new_dir = make_dir(folder)
 listoffiles = [ str(f) for f in os.listdir(folder) if f.endswith(".tif")]
 # ignore automatically generated hidden files that start with .
 real_names = [os.path.join(folder,f) for f in listoffiles if not f.startswith(".")]
-message = "\n\n >> Now composit-ing the following files: \n--> "+ "\n --> ".join(real_names) 
+message = "\n\n >> Now composit-ing the following files: \n --> "+ "\n --> ".join(real_names) 
 IJ.log(message)
 for i in real_names:
 	img = IJ.openImage(i)

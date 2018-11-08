@@ -1,0 +1,12 @@
+#+TITLE: Development directory. 
+#+DATE: 2018-11-07
+#+OPTIONS: toc:nil author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
+#+PROPERTY: header-args :eval never-export
+#+LATEX_HEADER: \usepackage[margin=1.0in]{geometry}
+#+LATEX_HEADER: \hypersetup{colorlinks=true,citecolor=black,linkcolor=black,urlcolor=blue,linkbordercolor=blue,pdfborderstyle={/S/U/W 1}}
+#+LATEX_HEADER: \usepackage[round]{natbib}
+#+LATEX_HEADER: \renewcommand{\bibsection}
+* What's here
+1. Experimental scripts and plugins still in development.
+2. docs in progress for experimental scripts and plugins
+3. proposals/ ideas for other scripts and plugins
