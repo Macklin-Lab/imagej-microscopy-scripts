@@ -39,6 +39,10 @@ The plugins will be in the "Plugin" menu all the way at the bottom. On Mac OSX i
  
 I use ImageJ script parameters https://imagej.net/Script_Parameters for UI design with these Jython (python on the JVM) scripts. Scrip parameters are awesome. Let me know if you want other options set. 
 
+* composite quick key
+A very simple but useful script that changes the display state of the active image to composite if it is color or greyscale, and to color if it is composite. I recommend binding this function to a keyboard shortcut for best quick results. 
+/Plugins>Shortcuts>Add Shortcut.../ Then select the key and the file =composite quick key= and you should be all set!
+
 * blind-files
 
 This plugin blinds files-- that's it. It uses the Jython implementation of universally unique identifiers ([[https://github.com/jythontools/jython/blob/master/lib-python/2.7/uuid.py][UUID]]s) to generate the new, unique blinded names for your files, and then simply copies them to a newly created directory. 
@@ -168,4 +172,6 @@ This is an experimental script that will convert and save all the individual til
 * CHANGELOG
 ** 2018-10-22
 - updated =blind-files_.py= to accept other common microscopy file endings per https://github.com/Macklin-Lab/imagej-microscopy-scripts/issues/1 
-- added console logging to =blind-files_.py= and =tif-convert.py= 
+- added console logging to =blind-files_.py= and =tif-convert.py=
+** 2019-06-14
+added composite quick key. A quick shortcut for changing the display state of an image. 
